@@ -1,10 +1,13 @@
 #include "main.h"
 
 typedef enum { NONE, MIN, MAX, LOW_GOAL, MID_LOW_GOAL, MID_HIGH_GOAL, HIGH_GOAL } presets;
-int liftPreset = 0;
+int liftPreset = NONE;
 
 bool xmtr2Connected = false;
 
+/*
+	Modifies input control into an exponential scale
+*/
 int expControl(int input)
 {
 	if (expScalingEnabled)
@@ -20,6 +23,9 @@ int expControl(int input)
 	return input;
 }
 
+/*
+	Check for preset buttons and assign it if preset buttons are pressed	
+*/
 void setPreset()
 {
 	if (liftPresetsEnabled)
@@ -79,24 +85,32 @@ void assignPreset()
 // User control task
 task usercontrol()
 {
-	potLTarget = potRTarget = 0;
-	liftActive = driveActive = false;
+	potLTarget = 0;
+	potRTarget = 0;
+	liftActive = false;
+	driveActive = false;
 	int stickPrimary;
 	int stickSecondary;
+	StartTask(liftController);
+	StartTask(pidController);
 
 	while (true)
 	{
+		// Start music task 
 		if (vexRT[Btn7R] == 1)
 		{
 			StartTask(playMusic);
 		}
+
 		// Limit movement
 		stickPrimary = (abs(vexRT[Ch3]) > abs(vexRT[Ch4]) ? vexRT[Ch3] : vexRT[Ch4]);
 		stickSecondary = (abs(vexRT[Ch3]) > abs(vexRT[Ch4]) ? vexRT[Ch3] : -vexRT[Ch4]);
 
 		// Movement and strafing
-		driveLF = driveRB = stickPrimary;
-		driveLB = driveRF = stickSecondary;
+		driveLF = stickPrimary;
+		driveRB = stickPrimary;
+		driveLB = stickSecondary;
+		driveRF = stickSecondary;
 
 		// Turning
 		driveLF += vexRT[Ch1];
@@ -117,7 +131,8 @@ task usercontrol()
 		motor[dLB] = driveLB;
 
 		// Lift functions
-		liftL = liftR = (vexRT[Btn5U] - vexRT[Btn5D]) * 127;
+		liftL = (vexRT[Btn5U] - vexRT[Btn5D]) * 127;
+		liftR = liftL;
 		setPreset();
 		if ((vexRT[Btn5U] == 1) || (vexRT[Btn5D] == 1))
 		{
@@ -136,12 +151,15 @@ task usercontrol()
 		// Assign lift
 		if ((vexRT[Btn5U] == 1) || (vexRT[Btn5D] == 1) || (liftPreset > NONE))
 		{
-			motor[liftLU] = motor[liftLD] = liftL;
-			motor[liftRU] = motor[liftRD] = liftR;
+			motor[liftLU] = liftL;
+			motor[liftLD] = liftL;
+			motor[liftRU] = liftR;
+			motor[liftRD] = liftR;
 		}
 
 		// Intake
-		intakeL = intakeR = (vexRT[Btn6U] * 100 - vexRT[Btn6D] * 80) + 10;
+		intakeL = (vexRT[Btn6U] * 100 - vexRT[Btn6D] * 80) + 10;
+		intakeR = intakeL;
 
 		motor[iL] = intakeL;
 		motor[iR] = intakeR;

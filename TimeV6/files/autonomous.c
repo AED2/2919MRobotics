@@ -82,8 +82,14 @@ task motorController()
 
 task autonomous()
 {
-	while (true)
-	{
+	resetEncoders();
+	StartTask(antiJam);
+	StartTask(motorController);
 
-	}
+	liftMove(1000, 100);
+	intakeOut();
+	liftMove(0, 100);
+	drivePointRight(90, 100);
+	driveForward(100, 200);
+	intakeIn();
 }
