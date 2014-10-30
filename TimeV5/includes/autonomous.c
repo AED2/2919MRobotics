@@ -77,7 +77,7 @@ void gyroTurn(int degrees,int driveLBSpeed,int driveLFSpeed,int driveRBSpeed,int
 
 	while (!(driveGoalReached) && (driveActive))
 	{
-		if (((abs(SensorValue[turningGyro]) > degrees - 50) && (abs(SensorValue[turningGyro]) > degrees + 50)) || ((abs(SensorValue[turningGyro]) < degrees - 50) && (abs(SensorValue[turningGyro]) < degrees + 50))) //not within 100 of set angle
+		if ((abs(SensorValue[turningGyro]) < degrees)) //not within 100 of set angle
 		{
 
 			motor[driveLB] = driveLBSpeed;
@@ -87,6 +87,11 @@ void gyroTurn(int degrees,int driveLBSpeed,int driveLFSpeed,int driveRBSpeed,int
 		}
 		else
 		{
+			motor[driveLB] = (abs(driveLBSpeed)/driveLBSpeed)*10;
+			motor[driveRB] = (abs(driveRBSpeed)/driveRBSpeed)*10;
+			motor[driveLF] = (abs(driveLFSpeed)/driveLFSpeed)*10;
+			motor[driveRF] = (abs(driveRFSpeed)/driveRFSpeed)*10;
+			wait1Msec(50);
 			motor[driveLB] = 0;
 			motor[driveRB] = 0;
 			motor[driveLF] = 0;
@@ -97,7 +102,6 @@ void gyroTurn(int degrees,int driveLBSpeed,int driveLFSpeed,int driveRBSpeed,int
 
 	//Set Drive to inactive
 	driveActive = false;
-	motor[driveRF]=0;
 
 }
 
@@ -136,7 +140,7 @@ void liftAutonMonitor()
 			{
 				while ((LLGoalReached == false) || (RLGoalReached == false) && (liftActive) )
 				{
-					if (relRPotL > potRTarget)
+					if (potR > potRTarget)
 					{
 						lL = -(liftTargetSpeed);
 					}
@@ -164,7 +168,7 @@ void liftAutonMonitor()
 			{
 				while ((LLGoalReached == false) || (RLGoalReached == false) && (liftActive))
 				{
-					if (relRPotL < potRTarget)
+					if (potR < potRTarget)
 					{
 						lL = (liftTargetSpeed);
 					}
@@ -201,6 +205,17 @@ void intake(int speed)
 {
 	motor[intakeL] = speed;
 	motor[intakeR] = speed;
+}
+
+void tLiftUp(int time,int speed)
+{
+			lL = speed;
+			lR = speed;
+			wait1MSec(time);
+			lL = 0;
+			lR = 0;
+		
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -242,10 +257,11 @@ task autonomous()
 	StartTask(liftController);
 //	StartTask(antiJam);
 	initialiseDrive();
-
+	
+	
 	// Autonomous Routine
 	// Feel free to modify the values
-
+/*
 	if (autonChooser < 1000) //Pot is on Right
 	{
 		//STRAFES RIGHT
@@ -282,18 +298,11 @@ task autonomous()
 		intakeStop;
 		driveStraightBack(300,127);
 	}
-
+*/
 	//Full blue auton below
-
+/*
 
 	//Part 1
-	/*intakeOut;
-	wait1Msec(300);
-	intakeIn;
-	wait1Msec(300);
-	intakeOut;
-	wait1Msec(75);
-	intakeStop;
 	driveStraightForward(400,127);
 	intakeIn;
 	wait1Msec(500);
@@ -321,33 +330,27 @@ task autonomous()
 	driveSwerveTurnLeft(300,127);
 	intakeOut;
 	wait1Msec(1000);
-	intakeStop;
+	intakeStop;*/
 
 	//Full red auton below
 	//Part 1
-	/* <--- Take these things out to use and add these to comment other sections
-	intakeOut;
-	wait1Msec(300);
-	intakeIn;
-	wait1Msec(300);
-	intakeOut;
-	wait1Msec(75);
-	intakeStop;
+
 	driveStraightForward(400,127);
 	intakeIn;
 	wait1Msec(500);
 	intakeStop;
-	liftMove(1000, 127);
+	liftMove(600, 127);
 	driveStraightBack(400,127);
 
 
 	//Part2
-	drivePointTurnRight(350,127);
-	intakeIn;
+	gyroPointTurnLeft(250,80);	
+	driveStraightForward(100,127);
+	intakeOut;
 	wait1Msec(3000);
 	intakeStop;
 	liftMove(1,127);
-	drivePointTurnRight(1500,127);
+/*
 
 
 	// Part 3
@@ -361,8 +364,7 @@ task autonomous()
 	intakeOut;
 	wait1Msec(1000);
 	intakeStop;
-	remember to put this in ---> */
-
+*/
 	//Backup Auton - 2 points
 	/*
 	intakeOut;

@@ -25,6 +25,8 @@
 #define driveSwerveTurnRight(x,y) drive(x,abs(y),abs(y),0,0)
 #define driveStrafeLeft(x,y) drive(x,abs(y),-abs(y),-abs(y),abs(y))
 #define driveStrafeRight(x,y) drive(x,-abs(y),abs(y),abs(y),-abs(y))
+#define gyroPointTurnLeft(x,y) gyroTurn((x*10)-abs(y*2),-abs(y),-abs(y),abs(y),abs(y))
+#define gyroPointTurnRight(x,y) gyroTurn((x*10)-abs(y*2),abs(y),abs(y),-abs(y),-abs(y))
 
 #define liftMove(x,y) lift(x,x,y)
 

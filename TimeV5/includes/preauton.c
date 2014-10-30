@@ -6,7 +6,7 @@ void initialiseGyro()
 	wait1Msec(500);
 	SensorType[turningGyro] = sensorGyro;
 	wait1Msec(2000);
-	SensorScale[turningGyro] = 520;
+	SensorScale[turningGyro] = 130;
   	SensorFullCount[turningGyro] = 3600;
 }
 
